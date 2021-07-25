@@ -1,0 +1,6 @@
+klass:
+  name: student01
+  age: 12
+
+server:
+  port: 8081
