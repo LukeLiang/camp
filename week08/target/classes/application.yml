@@ -1,0 +1,46 @@
+server:
+  port: 8080
+
+## shadingsphere����
+## ����Դ����
+spring:
+  shardingsphere:
+    datasource:
+      names: ds-0,ds-1
+      ds-0:
+        jdbc-url: jdbc:mysql://192.168.91.129:3306/replication?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: Luke@123
+      ds-1:
+        jdbc-url: jdbc:mysql://192.168.91.130:3306/replication?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: Luke@123
+
+    ## rules
+    rules:
+      sharding:
+        default-database-strategy:
+          standard:
+            sharding-column: id
+            sharding-algorithm-name: database-inline
+        sharding-algorithms:
+          database-inline:
+            type: INLINE
+            props:
+              algorithm-expression: ds-$->{id % 2}
+        tables:
+          t_order:
+            actual-data-nodes: ds-$->{0..1}.t_order_$->{0..1}
+            table-strategy:
+              standard:
+                sharding-column: id
+                sharding-algorithm-name: t-order-inline
+          t-order-inline:
+            type: INLINE
+            props:
+              algorithm-expression: t_order_$->{id % 2}
+
